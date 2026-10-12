@@ -1,0 +1,850 @@
+@import "tailwindcss";
+
+/*
+ * Light theme by default. Names are roles, not colours:
+ *   ink   = page background      paper = primary text (and the base for hairlines: paper/10)
+ *   mist  = secondary text       gold / gold-soft = accent fill / accent text
+ * `.theme-dark` flips the roles for device screens and the finale.
+ */
+@theme {
+  --color-ink: #f4f5f7;
+  --color-night: #eaedf2;
+  --color-deep: #dfe4ec;
+  --color-line: rgb(14 20 36 / 0.1);
+  --color-mist: #586176;
+  --color-paper: #0e1424;
+  --color-gold: #c08d35;
+  --color-gold-soft: #87600f;
+  --color-amber: #a8741f;
+
+  --color-acc-blue: #3a6ee0;
+  --color-acc-amber: #d4861a;
+  --color-acc-violet: #7656de;
+  --color-acc-emerald: #18966d;
+
+  --font-display: var(--font-unbounded), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-onest), ui-sans-serif, system-ui, sans-serif;
+
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+:root {
+  --header-h: 72px;
+  color-scheme: light;
+  --gold-grad: linear-gradient(100deg, #d9ae5c 0%, #a8761f 38%, #6f4a0c 62%, #c8973e 100%);
+  --glass-bg: linear-gradient(180deg, rgb(255 255 255 / 0.78), rgb(255 255 255 / 0.6));
+  --glass-border: rgb(14 20 36 / 0.08);
+  --glass-shadow: 0 1px 0 rgb(255 255 255 / 0.9) inset, 0 30px 60px -36px rgb(30 40 70 / 0.35);
+}
+
+/* Dark scope: device screens, mock-ups and the finale keep the night palette. */
+.theme-dark {
+  --color-ink: #05070d;
+  --color-night: #0b1324;
+  --color-deep: #121d36;
+  --color-line: rgb(154 166 189 / 0.14);
+  --color-mist: #9aa6bd;
+  --color-paper: #eef1f7;
+  --color-gold: #e2b65c;
+  --color-gold-soft: #f3d9a0;
+  --color-amber: #c98a2b;
+  --color-acc-blue: #6b9bff;
+  --color-acc-amber: #f0a945;
+  --color-acc-violet: #a68bff;
+  --color-acc-emerald: #45c79c;
+  --gold-grad: linear-gradient(100deg, #f6dda4 0%, #e2b65c 40%, #c98a2b 75%, #f0cf86 100%);
+  --glass-bg: linear-gradient(180deg, rgb(22 32 56 / 0.62), rgb(10 16 30 / 0.55));
+  --glass-border: rgb(154 166 189 / 0.14);
+  --glass-shadow: inset 0 1px 0 rgb(255 255 255 / 0.06), 0 24px 60px -30px rgb(0 0 0 / 0.8);
+  color: var(--color-paper);
+  color-scheme: dark;
+}
+
+html {
+  background: var(--color-ink);
+  scrollbar-gutter: stable;
+  -webkit-text-size-adjust: 100%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+body {
+  /* Transparent so the fixed AmbientBackdrop (negative z-index) shows through; html paints the ink. */
+  background: transparent;
+  color: var(--color-paper);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  overflow-x: clip;
+}
+
+section[id],
+footer[id] {
+  scroll-margin-top: var(--header-h);
+}
+
+::selection {
+  background: rgb(192 141 53 / 0.3);
+  color: var(--color-paper);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-gold-soft);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* Component classes live in a layer so Tailwind utilities (e.g. `hidden`) can override them. */
+@layer components {
+/* ---------- Typography helpers ---------- */
+
+.text-gold-gradient {
+  background: var(--gold-grad);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.display-tight {
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+/* ---------- Glass surfaces ---------- */
+
+.glass {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: blur(14px) saturate(130%);
+  -webkit-backdrop-filter: blur(14px) saturate(130%);
+}
+
+/* ---------- Buttons ---------- */
+
+.btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  min-height: 48px;
+  padding: 0 1.4rem;
+  border-radius: 999px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  user-select: none;
+  transition:
+    transform 160ms var(--ease-out),
+    background-color 200ms ease,
+    border-color 200ms ease,
+    box-shadow 300ms ease,
+    color 200ms ease;
+}
+.btn:active {
+  transform: scale(0.97);
+}
+.btn-gold {
+  color: #1a1206;
+  background: linear-gradient(180deg, #f3d9a0 0%, #e2b65c 55%, #cf9a3e 100%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.55),
+    0 8px 24px -10px rgb(226 182 92 / 0.55);
+}
+.btn-ghost {
+  color: var(--color-paper);
+  border: 1px solid color-mix(in oklab, var(--color-paper) 18%, transparent);
+  background: color-mix(in oklab, var(--color-paper) 2%, transparent);
+}
+.btn .btn-icon {
+  position: relative;
+  transition: transform 220ms var(--ease-out);
+}
+.btn .btn-label {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.btn-lg {
+  min-height: 54px;
+  padding: 0 1.8rem;
+  font-size: 1rem;
+}
+.btn-gold,
+.btn-ghost {
+  isolation: isolate;
+  overflow: hidden;
+}
+/* Gold: a diagonal sheen that sweeps across on hover. */
+.btn-gold::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  background: linear-gradient(105deg, transparent 30%, rgb(255 250 235 / 0.75) 48%, transparent 66%);
+  transform: translateX(-120%);
+  transition: transform 700ms var(--ease-out);
+}
+/* Ghost: a soft warm fill that fades in. */
+.btn-ghost::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(120% 140% at 50% 120%, rgb(226 182 92 / 0.22), transparent 70%);
+  opacity: 0;
+  transition: opacity 300ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .btn-gold:hover {
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.6),
+      0 0 0 1px rgb(243 217 160 / 0.5),
+      0 12px 40px -8px rgb(226 182 92 / 0.75);
+  }
+  .btn-gold:hover::after {
+    transform: translateX(120%);
+  }
+  .btn-ghost:hover {
+    border-color: rgb(226 182 92 / 0.55);
+    color: var(--color-gold-soft);
+  }
+  .btn-ghost:hover::before {
+    opacity: 1;
+  }
+  .btn:hover .btn-icon {
+    transform: translateX(3px);
+  }
+}
+}
+
+/* ---------- Scroll reveal (only hides once JS is ready) ---------- */
+
+/*
+ * <Reveal variant="…"> sets data-reveal; the observer adds data-shown.
+ * Nothing is hidden until `html.reveal-ready` exists (set by JS), so a
+ * script failure leaves every section fully visible.
+ */
+
+/* fade — lift and fade in */
+html.reveal-ready [data-reveal="fade"] {
+  transition:
+    opacity 800ms var(--ease-out),
+    transform 1000ms var(--ease-out);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+html.reveal-ready [data-reveal="fade"]:not([data-shown]) {
+  opacity: 0;
+  transform: translateY(26px);
+}
+
+/* scale — settle in from slightly smaller */
+html.reveal-ready [data-reveal="scale"] {
+  transition:
+    opacity 900ms var(--ease-out),
+    transform 1200ms var(--ease-out);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+html.reveal-ready [data-reveal="scale"]:not([data-shown]) {
+  opacity: 0;
+  transform: scale(0.94);
+}
+
+/* clip — a window opening onto an illustration */
+html.reveal-ready [data-reveal="clip"] {
+  transition:
+    clip-path 1100ms var(--ease-in-out),
+    opacity 600ms ease,
+    transform 1200ms var(--ease-out);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+html.reveal-ready [data-reveal="clip"]:not([data-shown]) {
+  clip-path: inset(14% 6% 14% 6% round 32px);
+  opacity: 0;
+  transform: translateY(24px);
+}
+
+/* lines — words rise out of a clipped baseline (see <RevealText>) */
+.rt-word {
+  display: inline-block;
+  overflow-y: clip;
+  overflow-x: visible;
+  overflow-clip-margin: 0.12em;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+  vertical-align: top;
+}
+.rt-word > span {
+  display: inline-block;
+}
+html.reveal-ready [data-reveal="lines"] .rt-word > span {
+  transition:
+    transform 1000ms var(--ease-out),
+    opacity 700ms ease;
+  transition-delay: calc(var(--reveal-delay, 0ms) + var(--w, 0) * 45ms);
+}
+html.reveal-ready [data-reveal="lines"]:not([data-shown]) .rt-word > span {
+  transform: translateY(105%);
+  opacity: 0;
+}
+
+/* draw — SVG strokes trace themselves (paths need pathLength="1") */
+html.reveal-ready [data-reveal] .draw-path,
+html.reveal-ready [data-reveal] .arch-draw {
+  stroke-dasharray: 1;
+  transition: stroke-dashoffset 1600ms var(--ease-in-out);
+  transition-delay: calc(var(--reveal-delay, 0ms) + var(--i, 0) * 140ms);
+}
+html.reveal-ready [data-reveal]:not([data-shown]) .draw-path,
+html.reveal-ready [data-reveal]:not([data-shown]) .arch-draw {
+  stroke-dashoffset: 1;
+}
+html.reveal-ready [data-reveal] .seam-node {
+  transition:
+    transform 600ms var(--ease-out) 900ms,
+    opacity 600ms ease 900ms;
+}
+html.reveal-ready [data-reveal]:not([data-shown]) .seam-node {
+  opacity: 0;
+  transform: translateX(-50%) scale(0.4);
+}
+
+/* stage — the container stays put; children marked .rv are choreographed via --rv */
+html.reveal-ready [data-reveal] .rv {
+  transition:
+    opacity 900ms var(--ease-out),
+    transform 1100ms var(--ease-out),
+    filter 900ms ease;
+  transition-delay: calc(var(--reveal-delay, 0ms) + var(--rv, 0ms));
+}
+html.reveal-ready [data-reveal]:not([data-shown]) .rv {
+  opacity: 0;
+  transform: translateY(22px);
+}
+html.reveal-ready [data-reveal]:not([data-shown]) .rv-scale {
+  transform: scale(0.9);
+  filter: blur(8px);
+}
+html.reveal-ready [data-reveal]:not([data-shown]) .rv-glow {
+  transform: scale(0.6);
+}
+
+/* ---------- Hero entrance (pure CSS, runs without JS) ---------- */
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(0.6em);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes emblem-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92) rotate(-8deg);
+    filter: blur(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+@keyframes draw {
+  from {
+    stroke-dashoffset: var(--len, 1000);
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes drift {
+  0% {
+    transform: translate3d(-6%, -4%, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate3d(5%, 3%, 0) rotate(8deg);
+  }
+  100% {
+    transform: translate3d(-6%, -4%, 0) rotate(0deg);
+  }
+}
+@keyframes cue {
+  0% {
+    transform: translateY(-100%);
+  }
+  60%,
+  100% {
+    transform: translateY(220%);
+  }
+}
+@keyframes gold-sheen {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: 0% 0;
+  }
+}
+
+.anim-rise {
+  animation: rise 900ms var(--ease-out) both;
+  animation-delay: var(--d, 0ms);
+}
+.anim-fade {
+  animation: fade-in 1200ms ease both;
+  animation-delay: var(--d, 0ms);
+}
+.anim-emblem {
+  animation: emblem-in 1600ms var(--ease-out) both;
+  animation-delay: var(--d, 0ms);
+}
+.anim-draw {
+  stroke-dasharray: var(--len, 1000);
+  animation: draw 2200ms var(--ease-in-out) both;
+  animation-delay: var(--d, 0ms);
+}
+.anim-drift {
+  animation: drift 38s ease-in-out infinite;
+}
+.anim-sheen {
+  animation: gold-sheen 2400ms var(--ease-out) 700ms both;
+}
+.scroll-cue::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent, var(--color-gold), transparent);
+  animation: cue 2600ms var(--ease-in-out) 2200ms infinite;
+}
+
+/* ---------- Kerege lattice (yurt wall) ---------- */
+
+.kerege {
+  background-image:
+    repeating-linear-gradient(55deg, rgb(226 182 92 / 0.16) 0 1px, transparent 1px 34px),
+    repeating-linear-gradient(-55deg, rgb(226 182 92 / 0.16) 0 1px, transparent 1px 34px);
+}
+
+/* ---------- Product cards ---------- */
+
+.product-card {
+  --acc: var(--color-gold);
+  transition:
+    box-shadow 400ms var(--ease-out),
+    border-color 300ms ease;
+}
+.product-card .card-glow {
+  opacity: 0;
+  transition: opacity 400ms ease;
+}
+.product-card .card-visual {
+  transition: transform 700ms var(--ease-out);
+}
+.product-card .card-icon {
+  transition:
+    transform 400ms var(--ease-out),
+    background-color 300ms ease;
+}
+.product-card .card-arrow {
+  transition: transform 260ms var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .product-card:hover {
+    border-color: color-mix(in oklab, var(--acc) 45%, transparent);
+    box-shadow: 0 30px 70px -35px color-mix(in oklab, var(--acc) 60%, transparent);
+  }
+  .product-card:hover .card-glow {
+    opacity: 1;
+  }
+  .product-card:hover .card-visual {
+    transform: translate3d(0, -6px, 0) scale(1.03);
+  }
+  .product-card:hover .card-icon {
+    transform: rotate(-8deg) scale(1.08);
+  }
+  .product-card:hover .card-arrow {
+    transform: translate(3px, -3px);
+  }
+}
+/* Touch devices: show the accent contour without hover */
+@media (hover: none) {
+  .product-card .card-glow {
+    opacity: 0.55;
+  }
+}
+
+/* ---------- Disclosure (grid rows trick) ---------- */
+
+.disclosure {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 360ms var(--ease-out);
+}
+.disclosure[data-open="true"] {
+  grid-template-rows: 1fr;
+}
+.disclosure > div {
+  overflow: hidden;
+}
+
+/* ---------- Reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-rise,
+  .anim-emblem {
+    animation-name: fade-in;
+    animation-duration: 400ms;
+  }
+  .anim-draw {
+    animation: none;
+    stroke-dasharray: none;
+  }
+  .anim-drift,
+  .scroll-cue::after {
+    animation: none;
+  }
+  html.reveal-ready [data-reveal]:not([data-shown]) {
+    transform: none;
+  }
+  .product-card .card-visual,
+  .product-card .card-icon,
+  .product-card .card-arrow {
+    transition: none;
+  }
+}
+
+/* =====================================================================
+   V2 — cinematic layer
+   ===================================================================== */
+
+/* ---------- Hero intro (CSS only: plays without JS, ~2.2s total) ---------- */
+
+@keyframes intro-line {
+  0% {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+  25% {
+    opacity: 1;
+  }
+  55% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scaleX(1);
+    opacity: 0.16;
+  }
+}
+@keyframes dash-in {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes wing-in-l {
+  from {
+    opacity: 0;
+    transform: translate3d(-10%, 5%, 0) rotate(-6deg);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes wing-in-r {
+  from {
+    opacity: 0;
+    transform: translate3d(10%, 5%, 0) rotate(6deg);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes glint {
+  from {
+    stroke-dashoffset: 0.14;
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  to {
+    stroke-dashoffset: -1;
+    opacity: 0;
+  }
+}
+@keyframes breathe {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.intro-line {
+  transform-origin: center;
+  animation: intro-line 1700ms var(--ease-in-out) both;
+}
+.arch-draw-load,
+.hero-draw {
+  stroke-dasharray: 1;
+  animation: dash-in 1500ms var(--ease-in-out) both;
+  animation-delay: calc(var(--d, 0ms) + var(--i, 0) * 120ms);
+}
+.wing-l,
+.wing-r {
+  transform-box: fill-box;
+  animation: wing-in-l 1300ms var(--ease-out) 550ms both;
+}
+.wing-l {
+  transform-origin: 100% 0%;
+}
+.wing-r {
+  transform-origin: 0% 0%;
+  animation-name: wing-in-r;
+}
+.glint {
+  stroke-dasharray: 0.14 1;
+  stroke-dashoffset: 0.14;
+  opacity: 0;
+  animation: glint 1200ms var(--ease-in-out) both;
+  animation-delay: var(--d, 1500ms);
+}
+.breathe {
+  animation: breathe 7s ease-in-out infinite;
+}
+
+/* Film grain to keep large gradients from banding. */
+.noise {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ---------- Product cards v2 ---------- */
+
+.product-card .card-press {
+  transition: transform 160ms var(--ease-out);
+}
+.product-card .card-press:active {
+  transform: scale(0.985);
+}
+.product-card .card-contour {
+  opacity: 0;
+  transition: opacity 400ms ease;
+  /* Draw only the 1px ring of the gradient. */
+  padding: 1px;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+@media (hover: hover) and (pointer: fine) {
+  .product-card:hover .card-visual {
+    transform: scale(1.045);
+  }
+  .product-card:hover .card-contour {
+    opacity: 1;
+  }
+  .product-card:hover .card-icon {
+    transform: translateY(-2px) rotate(-6deg) scale(1.06);
+  }
+}
+
+/* ---------- Ecosystem stage: the panel assembles from depth ---------- */
+
+html.reveal-ready [data-reveal] .eco-layer {
+  transition:
+    transform 1400ms var(--ease-out),
+    opacity 900ms ease;
+  transition-delay: calc(var(--reveal-delay, 0ms) + var(--rv, 0ms));
+}
+html.reveal-ready [data-reveal]:not([data-shown]) .eco-layer {
+  opacity: 0;
+}
+html.reveal-ready [data-reveal]:not([data-shown]) .eco-back {
+  transform: translate3d(0, 70px, -120px) scale(0.86);
+}
+html.reveal-ready [data-reveal]:not([data-shown]) .eco-mid {
+  transform: translate3d(0, 50px, -60px) rotateX(16deg) scale(0.94);
+}
+html.reveal-ready [data-reveal]:not([data-shown]) .eco-front {
+  transform: translate3d(0, 36px, 0) rotateX(12deg);
+}
+
+/* ---------- Final CTA ---------- */
+
+.cta-emblem {
+  transition:
+    transform 600ms var(--ease-out),
+    filter 600ms ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .cta-emblem:hover {
+    transform: translateY(-4px) scale(1.04);
+    filter: drop-shadow(0 12px 44px rgb(226 182 92 / 0.7));
+  }
+}
+
+/* ---------- Reduced motion (V2) ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .intro-line,
+  .glint,
+  .breathe {
+    animation: none;
+  }
+  .intro-line,
+  .glint {
+    opacity: 0;
+  }
+  .arch-draw-load,
+  .hero-draw {
+    animation: none;
+    stroke-dasharray: none;
+  }
+  .wing-l,
+  .wing-r {
+    animation-name: fade-in;
+    animation-duration: 500ms;
+  }
+  html.reveal-ready [data-reveal="fade"]:not([data-shown]),
+  html.reveal-ready [data-reveal="scale"]:not([data-shown]),
+  html.reveal-ready [data-reveal]:not([data-shown]) .rv,
+  html.reveal-ready [data-reveal]:not([data-shown]) .eco-layer {
+    transform: none;
+    filter: none;
+  }
+  html.reveal-ready [data-reveal="clip"]:not([data-shown]) {
+    clip-path: none;
+    transform: none;
+  }
+  html.reveal-ready [data-reveal="lines"]:not([data-shown]) .rt-word > span {
+    transform: none;
+  }
+  html.reveal-ready [data-reveal] .draw-path,
+  html.reveal-ready [data-reveal] .arch-draw {
+    stroke-dasharray: none;
+    transition: none;
+  }
+  .btn-gold::after {
+    display: none;
+  }
+}
+
+/* Hero headline words rise from a clipped baseline (CSS, runs without JS). */
+@keyframes word-up {
+  from {
+    transform: translateY(105%);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+.hero-word {
+  animation: word-up 1100ms var(--ease-out) both;
+  animation-delay: calc(var(--d, 0ms) + var(--w, 0) * 70ms);
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-word {
+    animation-name: fade-in;
+    animation-duration: 400ms;
+  }
+}
+
+/* =====================================================================
+   CafePOS — product layer on top of the YURTORA system
+   ===================================================================== */
+
+@theme {
+  /* Product accent: warm coffee amber (light theme values) */
+  --color-cafe: #b4620b;
+  --color-cafe-soft: #8a4a08;
+  --color-fresh: #13855f;
+}
+.theme-dark {
+  --color-cafe: #f0a945;
+  --color-cafe-soft: #f6c98a;
+  --color-fresh: #45c79c;
+}
+
+/* Steam curling up from a cup */
+@keyframes steam {
+  0% {
+    transform: translateY(0) scaleX(1);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateY(-140%) scaleX(1.4);
+    opacity: 0;
+  }
+}
+.steam {
+  animation: steam 2.6s ease-out infinite;
+  animation-delay: var(--d, 0ms);
+}
+
+/* Expanding ring for a bell / ready signal */
+@keyframes ping-ring {
+  from {
+    transform: scale(0.6);
+    opacity: 0.9;
+  }
+  to {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+.ping-ring {
+  animation: ping-ring 900ms var(--ease-out) both;
+}
+
+/* Thermal ticket edge (zig-zag tear) */
+.receipt-edge {
+  --zz: 7px;
+  -webkit-mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / calc(var(--zz) * 2) 100%;
+  mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / calc(var(--zz) * 2) 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .steam,
+  .ping-ring {
+    animation: none;
+    opacity: 0;
+  }
+}
